@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { supabase } from "@/utils/supabaseClient";
@@ -7,10 +8,10 @@ import "react-quill/dist/quill.snow.css";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function ArticleEditor(): JSX.Element {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving] = useState<boolean>(false);
 
   const saveArticle = async () => {
     setSaving(true);
@@ -34,7 +35,32 @@ export default function ArticleEditor(): JSX.Element {
         placeholder="Title"
         className="w-full p-2 border rounded mb-4"
       />
-      <ReactQuill value={content} onChange={setContent} className="mb-4" />
+      <ReactQuill
+        value={content}
+        onChange={setContent}
+        className="mb-4"
+        modules={{
+          toolbar: [
+            [{ header: [1, 2, 3, false] }],
+            ["bold", "italic", "underline", "strike", "blockquote"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["link", "image"],
+            ["clean"],
+          ],
+        }}
+        formats={[
+          "header",
+          "bold",
+          "italic",
+          "underline",
+          "strike",
+          "blockquote",
+          "list",
+          "bullet",
+          "link",
+          "image",
+        ]}
+      />
       <div className="flex items-center gap-3">
         <button
           onClick={saveArticle}
