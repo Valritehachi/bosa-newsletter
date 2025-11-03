@@ -62,57 +62,25 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { supabase } from "@/utils/supabaseClient";
-
-// Dynamically import ReactQuill only on the client
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import { useState } from "react";
 import "react-quill/dist/quill.snow.css";
 
+// Dynamic import to avoid SSR issues in Next.js
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+
 export default function ArticleEditor() {
-  const [mounted, setMounted] = useState(false); // ensures client-side render
   const [content, setContent] = useState<string>("");
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Save content to Supabase (example)
-  const saveArticle = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("articles") // make sure you have an "articles" table
-        .insert([{ content }]);
-
-      if (error) {
-        console.error("Error saving article:", error.message);
-      } else {
-        console.log("Article saved:", data);
-      }
-    } catch (err) {
-      console.error("Unexpected error:", err);
-    }
-  };
-
-  if (!mounted) return null; // prevent SSR rendering issues
-
   return (
-    <div className="my-4">
-      <ReactQuill
-        theme="snow"
-        value={content}
-        onChange={setContent}
-        style={{ minHeight: "300px" }}
-      />
-
-      <button
-        onClick={saveArticle}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-      >
-        Save Article
-      </button>
+    <div>
+      <ReactQuill theme="snow" value={content} onChange={setContent} />
+      <div style={{ marginTop: "20px" }}>
+        <strong>Preview:</strong>
+        <div dangerouslySetInnerHTML={{ __html: content }} />
+      </div>
     </div>
   );
 }
+
 
