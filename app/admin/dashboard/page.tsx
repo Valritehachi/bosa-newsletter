@@ -1,97 +1,96 @@
-// "use client";
-// import { useEffect, useState } from "react";
-// import { supabase } from "@/utils/supabaseClient";
-// import { useRouter } from "next/navigation";
-// import dynamic from "next/dynamic";
-
-// const ArticleEditor = dynamic(() => import("../../components/ArticleEditor"), { ssr: false });
-
-// export default function AdminDashboard(): JSX.Element | null {
-//   const router = useRouter();
-//   const [loading, setLoading] = useState(true);
-//   const [session, setSession] = useState<any>(null);
-
-//   useEffect(() => {
-//     const check = async () => {
-//       const { data } = await supabase.auth.getSession();
-//       if (!data.session) {
-//         router.push("/admin/login");
-//       } else {
-//         setSession(data.session);
-//       }
-//       setLoading(false);
-//     };
-//     check();
-
-//     // optional: subscribe to auth changes
-//     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
-//       setSession(s);
-//       if (!s) router.push("/admin/login");
-//     });
-
-//     return () => {
-//       sub.subscription.unsubscribe();
-//     };
-//   }, [router]);
-
-//   const logout = async () => {
-//     await supabase.auth.signOut();
-//     router.push("/admin/login");
-//   };
-
-//   if (loading) return <div className="p-6">Loading...</div>;
-//   if (!session) return null;
-
-//   return (
-//     <div className="min-h-screen p-6 bg-gray-50">
-//       <div className="max-w-5xl mx-auto">
-//         <div className="flex justify-between items-center mb-6">
-//           <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-//           <div>
-//             <button onClick={logout} className="px-3 py-1 rounded bg-red-500 text-white">
-//               Logout
-//             </button>
-//           </div>
-//         </div>
-
-//         <ArticleEditor />
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
 
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabaseClient";
 import ArticlesEditor from "@/app/components/ArticleEditor";
 
-export default function Dashboard() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+export default function DashboardPage() {
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
+  const [articleCount, setArticleCount] = useState<number>(0);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) router.push("/admin/login");
-      else setUser(session.user);
-      setLoading(false);
-    });
-  }, [router]);
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email || "");
+        const name = user.email?.split("@")[0] || "Admin";
+        setUserName(name.charAt(0).toUpperCase() + name.slice(1));
+      }
+    };
 
-  if (loading) return <p>Loading...</p>;
+    const getArticleCount = async () => {
+      const { count } = await supabase
+        .from("articles")
+        .select("*", { count: "exact", head: true });
+      setArticleCount(count || 0);
+    };
+
+    getUser();
+    getArticleCount();
+  }, []);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
-      <header style={{ marginBottom: "40px" }}>
-        <h1>Dashboard</h1>
-        <p>Welcome, {user?.email}</p>
-      </header>
+    <div className="min-h-screen bg-white">
+      {/* Beautiful Header with Gradient */}
+      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white shadow-2xl">
+        <div className="max-w-7xl mx-auto px-8 py-10">
+          <div className="flex items-center justify-between">
+            {/* Left Side - Welcome Message */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-2xl">
+                  <span className="text-4xl">👋</span>
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold mb-1">
+                    Welcome back, {userName}!
+                  </h1>
+                  <p className="text-blue-100 text-lg flex items-center gap-2">
+                    <span className="text-xl">📧</span>
+                    {userEmail}
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 inline-block mt-4">
+                <p className="text-sm text-blue-100 mb-1">Ready to create amazing content?</p>
+                <p className="text-2xl font-bold">Let's get started! 🚀</p>
+              </div>
+            </div>
 
-      {/* Articles Editor */}
+            {/* Right Side - Stats Cards */}
+            <div className="flex gap-4">
+              <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 min-w-[160px] shadow-xl">
+                <div className="text-center">
+                  <div className="text-3xl mb-2">📰</div>
+                  <div className="text-4xl font-bold mb-1">{articleCount}</div>
+                  <div className="text-sm text-blue-100 font-medium">Total Articles</div>
+                </div>
+              </div>
+              
+              <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 min-w-[160px] shadow-xl">
+                <div className="text-center">
+                  <div className="text-3xl mb-2">📅</div>
+                  <div className="text-xl font-bold mb-1">
+                    {new Date().toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </div>
+                  <div className="text-sm text-blue-100 font-medium">
+                    {new Date().toLocaleDateString('en-US', {
+                      weekday: 'long'
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
       <ArticlesEditor />
     </div>
   );
 }
-
