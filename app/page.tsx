@@ -14,6 +14,7 @@ interface Post {
   title: string;
   content: string;
   image_url?: string;
+  published_at?: string;
 }     
 
 export default function Home() {
@@ -25,7 +26,7 @@ export default function Home() {
         .from("articles")
         .select("*")
         .order("published_at", { ascending: false })
-        .limit(3); // show latest 3 on home page
+        .limit(8); // show latest posts on home page
 
       if (error) {
         console.error("Error fetching articles:", error);
@@ -77,17 +78,24 @@ export default function Home() {
                         <img
                           src={n.image_url}
                           alt={n.title}
-                          className="w-full h-48 object-cover rounded-md"
+                          width={600}
+                          height={600}
+                          className="w-full h-80 object-cover rounded-md"
                         />
                       </div>
                     )}
                     <div className="flex-1">
-                      <h2 className="text-2xl font-semibold mb-2">{n.title}</h2>
+                      <h2 className="text-2xl font-semibold mb-1">{n.title}</h2>
+                      {n.published_at && (
+                        <p className="text-gray-500 text-sm mb-2">
+                          🗓️ {new Date(n.published_at).toLocaleDateString()}
+                        </p>
+                      )}
                       <p className="text-gray-700 mb-4">
                         {n.content.substring(0, 150)}...
                       </p>
                       <ReadMoreButton id={n.id} />
-                    </div>
+                    </div>  
                   </div>
                 ))
               )}

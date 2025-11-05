@@ -33,7 +33,8 @@ const Sidebar: React.FC = () => {
       const { data: allPosts, error: archivesError } = await supabase
         .from("articles")
         .select("published_at")
-        .order("published_at", { ascending: false });
+        .order("published_at", { ascending: false })
+        .limit(100); // limit to 1000 for performance
 
       if (!archivesError && allPosts) {
         // Group by month and year
@@ -51,7 +52,7 @@ const Sidebar: React.FC = () => {
             const [month, year] = monthYear.split(' ');
             return { month, year: parseInt(year), count };
           })
-          .slice(0, 6);
+          .slice(0, 24);
 
         setArchives(archiveArray);
       }
@@ -64,7 +65,7 @@ const Sidebar: React.FC = () => {
 
   return (
     
-    <aside className="w-1/4 bg-gray-100 rounded-2xl p-6 shadow-md h-[calc(100vh-200px)] overflow-y-auto">
+    <aside className="w-1/4 h-full self-start bg-gray-100 rounded-2xl p-6 shadow-md h-[calc(100vh-200px)] overflow-y-auto">
       <Searchbar />
       {/* Recent Posts */}
       <h3 className="italic text-base font-semibold mb-4">Recent Posts</h3>

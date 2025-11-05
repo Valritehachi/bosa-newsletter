@@ -72,9 +72,9 @@ export default function NewsletterDetailPage({ params }: { params: Promise<{ id:
             <h1 className="text-4xl font-bold mb-4 text-blue-600">
               {post.title}
             </h1>
-            {post.created_at && (
+            {post.published_at && (
               <p className="text-gray-500 text-sm mb-6">
-                {new Date(post.created_at).toLocaleDateString()}
+                {new Date(post.published_at).toLocaleDateString()}
               </p>
             )}
             <div className="prose max-w-none">

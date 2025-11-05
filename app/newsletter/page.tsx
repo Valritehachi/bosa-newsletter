@@ -10,6 +10,7 @@ interface Post {
   id: number;
   title: string;
   content: string;
+  published_at?: string;
 }
 
 export default function NewsletterPage() {
@@ -48,6 +49,13 @@ export default function NewsletterPage() {
             posts.map((n) => (
               <div key={n.id} className="border-b border-gray-200 py-4">
                 <h2 className="text-xl font-semibold">{n.title}</h2>
+
+                {n.published_at && (
+                  <p className="text-gray-500 text-sm mb-2">
+                    🗓️ {new Date(n.published_at).toLocaleDateString()}
+                  </p>
+                )}
+
                 <p>{n.content.substring(0, 100)}...</p>
                 <ReadMoreButton id={n.id} />
               </div>
