@@ -13,6 +13,8 @@ interface Post {
   content: string;
   created_at?: string;
   image_url?: string;
+  published_at?: string;
+  category?: string;
 }
 
 export default function NewsletterDetailPage({ params }: { params: Promise<{ id: string }> }) {

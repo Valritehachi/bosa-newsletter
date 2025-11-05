@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
       const { data: posts, error: postsError } = await supabase
         .from("articles")
         .select("id, title, created_at")
-        .order("created_at", { ascending: false })
+        .order("published_at", { ascending: false })
         .limit(5);
 
       if (!postsError && posts) {
@@ -32,15 +32,15 @@ const Sidebar: React.FC = () => {
       // Fetch all articles to generate archives
       const { data: allPosts, error: archivesError } = await supabase
         .from("articles")
-        .select("created_at")
-        .order("created_at", { ascending: false });
+        .select("published_at")
+        .order("published_at", { ascending: false });
 
       if (!archivesError && allPosts) {
         // Group by month and year
         const archiveMap = new Map<string, number>();
         
         allPosts.forEach((post) => {
-          const date = new Date(post.created_at);
+          const date = new Date(post.published_at);
           const monthYear = `${date.toLocaleDateString('en-US', { month: 'long' })} ${date.getFullYear()}`;
           archiveMap.set(monthYear, (archiveMap.get(monthYear) || 0) + 1);
         });

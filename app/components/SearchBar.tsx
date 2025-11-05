@@ -30,7 +30,7 @@ const SearchBar: React.FC = () => {
       .from("articles")
       .select("id, title, created_at")
       .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
-      .order("created_at", { ascending: false })
+      .order("published_at", { ascending: false })
       .limit(5);
 
     if (!error && data) {

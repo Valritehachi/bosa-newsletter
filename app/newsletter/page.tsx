@@ -20,7 +20,7 @@ export default function NewsletterPage() {
       const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("published_at", { ascending: false });
 
       if (error) console.error("Error fetching articles:", error);
       else setPosts(data as Post[]);

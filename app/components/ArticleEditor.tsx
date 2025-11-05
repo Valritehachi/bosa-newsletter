@@ -9,6 +9,8 @@ interface Article {
   content: string;
   image_url?: string;
   created_at?: string;
+  published_at?: string;
+  category?: string;
 }
 
 const categories = [
@@ -30,6 +32,9 @@ export default function ArticlesEditor() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState<string>("");
+  const [publishedAt, setPublishedAt] = useState<string>("");
+  const publishedDate = publishedAt ? new Date(publishedAt).toISOString() : new Date().toISOString();
+  
 
 
   // Fetch articles
@@ -37,10 +42,20 @@ export default function ArticlesEditor() {
     const { data, error } = await supabase
       .from("articles")
       .select("*")
-      .order("created_at", { ascending: false });
-    if (error) console.error(error);
-    else setArticles(data as Article[]);
+      .order("published_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+    } else {
+      const articlesWithPublished = (data as Article[]).map(a => ({
+        ...a,
+        published_at: a.published_at || a.created_at || new Date().toISOString(),
+      }));
+      setArticles(articlesWithPublished);
+    }
   };
+
+
 
   useEffect(() => {
     fetchArticles();
@@ -78,13 +93,27 @@ export default function ArticlesEditor() {
     if (editingId) {
       const { error } = await supabase
         .from("articles")
-        .update({ title, content, category, ...(imageUrl && { image_url: imageUrl }) })
+        .update({
+          title,
+          content,
+          category,
+          published_at: publishedDate,
+          ...(imageUrl && { image_url: imageUrl }),
+        })
         .eq("id", editingId);
       if (error) console.error(error);
     } else {
       const { error } = await supabase
         .from("articles")
-        .insert([{ title, content, category, ...(imageUrl && { image_url: imageUrl }) }]);
+        .insert([
+          {
+            title,
+            content,
+            category,
+            published_at: publishedDate,
+            ...(imageUrl && { image_url: imageUrl }),
+          },
+        ]);
       if (error) console.error(error);
     }
 
@@ -106,12 +135,14 @@ export default function ArticlesEditor() {
 
   // Edit article
   const editArticle = (article: Article) => {
-    setEditingId(article.id);
-    setTitle(article.title);
-    setContent(article.content);
-    setImageFile(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  setEditingId(article.id);
+  setTitle(article.title);
+  setContent(article.content);
+  setCategory(article.category || "");
+  setPublishedAt(article.published_at ? article.published_at.split("T")[0] : "");
+  setImageFile(null);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
   // Cancel editing
   const cancelEdit = () => {
@@ -164,8 +195,22 @@ export default function ArticlesEditor() {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-lg"
                 />
               </div>
-              
 
+
+              {/* Published At Input */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  📅 Published At (optional)
+                </label>
+                <input
+                  type="date"
+                  value={publishedAt}
+                  onChange={(e) => setPublishedAt(e.target.value)}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                />
+              </div>
+
+              
               {/* Select Category */}
               <label className="block mb-2 font-semibold">Category</label>
               <select

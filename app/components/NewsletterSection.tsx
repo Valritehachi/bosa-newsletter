@@ -17,7 +17,7 @@ export default function NewsletterSection() {
       const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("published_at", { ascending: false });
 
       if (error) console.error(error);
       else setPosts(data as Post[]);

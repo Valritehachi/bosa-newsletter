@@ -24,7 +24,7 @@ export default function Home() {
       const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .order("created_at", { ascending: false })
+        .order("published_at", { ascending: false })
         .limit(3); // show latest 3 on home page
 
       if (error) {
