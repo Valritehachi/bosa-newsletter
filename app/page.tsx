@@ -5,9 +5,9 @@ import Navbar from "./components/Navbar";
 import Image from "next/image";
 import Sidebar from "./components/sidebar";
 import ReadMoreButton from "./components/ReadMoreButton";
+import LoadMoreButton from "./components/LoadMoreButton";
 import { supabase } from "@/utils/supabaseClient";
-import { useEffect, useState } from "react";  
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface Post {
   id: number;
@@ -15,35 +15,48 @@ interface Post {
   content: string;
   image_url?: string;
   published_at?: string;
-}     
+}
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [limit, setLimit] = useState(8); // initial number of posts
+  const [hasMore, setHasMore] = useState(true);
+
+  // Fetch posts from Supabase
+  const fetchArticles = async (currentLimit: number) => {
+    const { data, error, count } = await supabase
+      .from("articles")
+      .select("*", { count: "exact" })
+      .order("published_at", { ascending: false })
+      .limit(currentLimit);
+
+    if (error) {
+      console.error("Error fetching articles:", error);
+      return;
+    }
+
+    setPosts(data as Post[]);
+
+    if (count && currentLimit >= count) {
+      setHasMore(false); // hide Load More if all posts are loaded
+    }
+  };
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      const { data, error } = await supabase
-        .from("articles")
-        .select("*")
-        .order("published_at", { ascending: false })
-        .limit(8); // show latest posts on home page
+    fetchArticles(limit);
+  }, [limit]);
 
-      if (error) {
-        console.error("Error fetching articles:", error);
-      } else {
-        setPosts(data as Post[]);
-      }
-    };
-
-    fetchArticles();
-  }, []);
+  // Load More button handler
+  const loadMoreButtonHandler = () => {
+    setLimit((prev) => prev + 8);
+  };
 
   return (
     <main className="flex flex-col min-h-screen">
       <Header />
       <Navbar />
 
-      {/* Hero image under the header */}
+      {/* Hero image */}
       <div className="flex justify-center mt-6 h-[400px]">
         <Image
           src="/images/hero.jpg"
@@ -95,19 +108,17 @@ export default function Home() {
                         {n.content.substring(0, 150)}...
                       </p>
                       <ReadMoreButton id={n.id} />
-                    </div>  
+                    </div>
                   </div>
                 ))
               )}
             </div>
 
-            <div className="text-center mt-10">
-              <Link href="/newsletter">
-                <button className="text-blue-600 hover:underline">
-                  View All Newsletters →
-                </button>
-              </Link>
-            </div>
+            {/* Load More Button */}
+            <LoadMoreButton
+              onClick={loadMoreButtonHandler}
+              hasMore={hasMore}
+            />
           </section>
 
           {/* Right Sidebar */}
