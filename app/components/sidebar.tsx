@@ -311,7 +311,14 @@ interface Archive {
   count: number;
 }
 
-const Sidebar: React.FC = () => {
+
+interface SidebarProps {
+  refreshCommentsTrigger?: number;
+}
+
+
+
+const Sidebar: React.FC<SidebarProps> = ({ refreshCommentsTrigger }) => {
   const [recentPosts, setRecentPosts] = useState<Article[]>([]);
   const [recentComments, setRecentComments] = useState<Comment[]>([]);
   const [archives, setArchives] = useState<Archive[]>([]);
@@ -376,9 +383,9 @@ const Sidebar: React.FC = () => {
 
       setLoading(false);
     };
-
+    
     fetchData();
-  }, []);
+  }, [refreshCommentsTrigger]);
 
   return (
     <aside className="w-1/4 h-full self-start bg-gray-100 rounded-2xl p-6 shadow-md h-[calc(100vh-200px)] overflow-y-auto">

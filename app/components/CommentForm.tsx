@@ -14,9 +14,11 @@ interface Comment {
 
 interface CommentFormProps {
   articleId: number;
+  onCommentSubmitted?: () => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
+
+const CommentForm: React.FC<CommentFormProps> = ({ articleId, onCommentSubmitted }) => {
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -73,23 +75,26 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
 
 
     try {
-      const res = await fetch("/api/submit_comment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId, name, comment, token }),
-      });
+        const res = await fetch("/api/submit_comment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ articleId, name, comment, token }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (!res.ok) {
-        setMessage(`❌ ${data.error || "Failed to submit comment."}`);
-      } else {
-        setMessage("✅ Comment submitted successfully!");
-        setName("");
-        setComment("");
-        recaptchaRef.current?.reset();
-        fetchComments(); // refresh comments list
-      }
+        if (!res.ok) {
+            setMessage(`❌ ${data.error || "Failed to submit comment."}`);
+        } else {
+            setMessage("✅ Comment submitted successfully!");
+            setName("");
+            setComment("");
+            recaptchaRef.current?.reset();
+            fetchComments(); // refresh comments list
+
+            // ✅ Call parent callback to refresh sidebar
+            if (onCommentSubmitted) onCommentSubmitted();
+        }
     } catch (err) {
       console.error(err);
       setMessage("❌ Something went wrong. Try again later.");

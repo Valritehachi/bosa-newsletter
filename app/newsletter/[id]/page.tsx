@@ -1,4 +1,3 @@
-
 "use client";
 
 import { use, useEffect, useState } from "react";
@@ -26,11 +25,13 @@ interface Comment {
   created_at: string;
 }
 
+
 export default function NewsletterDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
 
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsRefreshTrigger, setCommentsRefreshTrigger] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,26 +111,13 @@ export default function NewsletterDetailPage({ params }: { params: Promise<{ id:
               </p>
             </div>
 
-            {/* Comments List
-            <section className="mt-10">
-              <h2 className="text-3xl mb-4 font-semibold">Comments</h2>
-              {comments?.length ? (
-                comments.map((comment) => (
-                  <div key={comment.id} className="mb-4 border-b pb-2">
-                    <p className="font-semibold text-gray-800">{comment.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(comment.created_at).toLocaleString()}
-                    </p>
-                    <p className="mt-1 text-gray-700">{comment.comment}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 italic">No comments yet.</p>
-              )}
-            </section> */}
-
             {/* Comment Form */}
-            <CommentForm articleId={Number(id)} />
+            <CommentForm
+              articleId={Number(id)}
+              onCommentSubmitted={() =>
+                setCommentsRefreshTrigger((prev) => prev + 1)
+              }
+            />
           </article>
         ) : (
           <p className="text-center text-gray-500">Newsletter not found</p>
