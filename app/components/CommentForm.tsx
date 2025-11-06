@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+
+
 
 interface Comment {
   id: number;
@@ -20,19 +23,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
   const [message, setMessage] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
-
-  // Load reCAPTCHA script dynamically
-  useEffect(() => {
-    const scriptId = "recaptcha-script";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "https://www.google.com/recaptcha/api.js";
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-  }, []);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   // Fetch existing comments for this article
   const fetchComments = async () => {
@@ -73,12 +64,13 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
         return;
     }
 
-    const token = (window as any).grecaptcha.getResponse();
+    const token = recaptchaRef.current?.getValue();
     if (!token) {
-      setMessage("⚠️ Please complete the CAPTCHA.");
-      setSubmitting(false);
-      return;
+        setMessage("⚠️ Please complete the CAPTCHA.");
+        setSubmitting(false);
+        return;
     }
+
 
     try {
       const res = await fetch("/api/submit-comment", {
@@ -95,7 +87,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
         setMessage("✅ Comment submitted successfully!");
         setName("");
         setComment("");
-        (window as any).grecaptcha.reset();
+        recaptchaRef.current?.reset();
         fetchComments(); // refresh comments list
       }
     } catch (err) {
@@ -128,10 +120,10 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
           required
         />
 
-        <div
-          className="g-recaptcha"
-          data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
-        ></div>
+        <ReCAPTCHA
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+            ref={recaptchaRef}
+        />
 
         <button
           type="submit"
