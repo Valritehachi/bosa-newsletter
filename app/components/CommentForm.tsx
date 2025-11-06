@@ -45,6 +45,18 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
     }
   };
 
+    // Optional: poll to make sure grecaptcha is ready
+    useEffect(() => {
+    const interval = setInterval(() => {
+        if ((window as any).grecaptcha && (window as any).grecaptcha.getResponse) {
+        clearInterval(interval);
+        }
+    }, 100);
+
+    return () => clearInterval(interval);
+    }, []);
+
+
   useEffect(() => {
     fetchComments();
   }, [articleId]);
@@ -54,11 +66,11 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
     setSubmitting(true);
     setMessage(null);
 
-    // Check grecaptcha
-    if (!(window as any).grecaptcha) {
-      setMessage("⚠️ reCAPTCHA is not loaded yet.");
-      setSubmitting(false);
-      return;
+   // Check grecaptcha
+    if (!(window as any).grecaptcha || !(window as any).grecaptcha.getResponse) {
+        setMessage("⚠️ reCAPTCHA not ready. Refresh the page and try again.");
+        setSubmitting(false);
+        return;
     }
 
     const token = (window as any).grecaptcha.getResponse();
