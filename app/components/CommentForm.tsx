@@ -7,7 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 console.log("Client RECAPTCHA SITE KEY:", process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
 interface Comment {
   id: number;
-  name: string;
+  author_name: string; 
   comment: string;
   created_at: string;
 }
@@ -142,11 +142,14 @@ const CommentForm: React.FC<CommentFormProps> = ({ articleId }) => {
         {comments.length > 0 ? (
           comments.map((c) => (
             <div key={c.id} className="mb-4 border-b pb-2">
-              <p className="font-semibold text-gray-800">{c.name}</p>
-              <p className="text-xs text-gray-500">
-                {new Date(c.created_at).toLocaleString()}
-              </p>
-              <p className="mt-1 text-gray-700">{c.comment}</p>
+                <div className="flex items-center gap-2 mb-1">
+                <p className="font-semibold text-gray-800">{c.author_name}</p>
+                <span className="text-gray-400">•</span>
+                <p className="text-xs text-gray-500">
+                    {new Date(c.created_at).toLocaleString()}
+                </p>
+                </div>
+                <p className="mt-1 text-gray-700">{c.comment}</p>
             </div>
           ))
         ) : (
