@@ -78,7 +78,6 @@ export default function NewsletterDetailPage({ params }: { params: Promise<{ id:
     setRefreshTrigger((prev) => prev + 1);
   };
 
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -117,7 +116,6 @@ export default function NewsletterDetailPage({ params }: { params: Promise<{ id:
               </p>
             </div>
 
-           
             {/* Comment Form */}
               <CommentForm
                 articleId={Number(id)}
