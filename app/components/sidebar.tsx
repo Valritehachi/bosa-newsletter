@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/utils/supabaseClient";
 import Searchbar from "./SearchBar";
+import error from "next/error";
 
 interface Article {
   id: number;
@@ -56,21 +57,29 @@ const Sidebar: React.FC<SidebarProps> = ({ refreshCommentsTrigger }) => {
         .limit(5);
       if (!postsError && posts) setRecentPosts(posts);
 
+
+      
+
       // Fetch recent comments with article titles
       const { data: comments, error: commentsError } = await supabase
         .from("comments")
-        .select(`
-          id,
-          author_name,
-          comment,
-          created_at,
-          article_id,
-          articles (title)
-        `)
+        .select(
+          `
+            id,
+            author_name,
+            comment,
+            created_at,
+            article_id,
+            articles!inner(title)
+          `
+        )
         .order("created_at", { ascending: false })
         .limit(5);
+
       if (!commentsError && comments) setRecentComments(comments);
       setCommentsLoading(false);
+
+     
 
       // Fetch all articles to generate archives
       const { data: allPosts, error: archivesError } = await supabase
@@ -127,23 +136,27 @@ const Sidebar: React.FC<SidebarProps> = ({ refreshCommentsTrigger }) => {
         )}
       </ul>
 
-      {/* Recent Comments */}
       <h3 className="italic text-base font-semibold mb-4">Recent Comments</h3>
+      
       <ul className="arrow-bullet mb-6 space-y-2 text-gray-700">
         {commentsLoading ? (
           <li className="text-gray-500 italic text-xs">Loading...</li>
         ) : recentComments.length === 0 ? (
           <li className="text-gray-500 italic text-xs">No comments yet</li>
         ) : (
+          
           recentComments.map((comment) => (
             <li key={comment.id}>
-              <Link href={`/newsletter/${comment.article_id}`} className="block">
+              <Link
+                href={`/newsletter/${comment.article_id}`}
+                className="block"
+              >
                 <span className="text-blue-600 italic text-xs hover:font-bold hover:underline transition-all">
                   {comment.author_name}
-                </span>
-                <span className="text-gray-600 italic text-xs"> on </span>
+                </span>{" "}
+                <span className="text-gray-600 italic text-xs">on</span>{" "}
                 <span className="text-blue-600 italic text-xs hover:font-bold hover:underline transition-all">
-                  {comment.articles?.[0].title || "Unknown Article"}
+                  {comment.articles?.title || "Unknown Article"}
                 </span>
                 <p className="text-gray-500 italic text-xs mt-1">
                   "{truncateComment(comment.comment)}"
