@@ -203,7 +203,7 @@ const Sidebar: React.FC<SidebarProps> = ({ refreshCommentsTrigger }) => {
         </li>
         <li>
           <Link
-            href="/categories/beneficiaries"
+            href="/achievers_trailblazers"
             className="text-blue-600 italic text-xs hover:font-bold hover:underline transition-all"
           >
             Beneficiaries of James "Dick" Richards Trust
@@ -272,7 +272,7 @@ const Sidebar: React.FC<SidebarProps> = ({ refreshCommentsTrigger }) => {
         </li>
         <li>
           <Link
-            href="/feeds/entries"
+            href="/newsletter"
             className="text-blue-600 italic text-xs hover:font-bold hover:underline transition-all"
           >
             Entries feed
@@ -280,7 +280,7 @@ const Sidebar: React.FC<SidebarProps> = ({ refreshCommentsTrigger }) => {
         </li>
         <li>
           <Link
-            href="/feeds/comments"
+            href="/comments-feed"
             className="text-blue-600 italic text-xs hover:font-bold hover:underline transition-all"
           >
             Comments feed
