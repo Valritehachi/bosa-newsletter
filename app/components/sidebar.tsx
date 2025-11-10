@@ -195,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({ refreshCommentsTrigger }) => {
       <ul className="arrow-bullet mb-6 space-y-2 text-gray-700">
         <li>
           <Link
-            href="/categories/achievers-trailblazers"
+            href="/achievers_trailblazers"
             className="text-blue-600 italic text-xs hover:font-bold hover:underline transition-all"
           >
             Achievers & Trailblazers

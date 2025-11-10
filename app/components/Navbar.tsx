@@ -7,7 +7,7 @@ export default function Navbar() {
         <nav className="bg-gradient-to-r from-blue-500 to-blue-400 text-white shadow-lg rounded-3xl py-3 sm:py-4">
           
           <div className="overflow-x-auto scrollbar-hide">
-            <ul className="bg-blue-600 flex rounded-2xl text-white font-medium gap-2 sm:gap-4 lg:gap-8 py-2 sm:py-3 px-3 sm:px-4 lg:px-6 text-xs sm:text-sm lg:text-base mx-2 sm:mx-4 lg:mx-8">
+            <ul className="bg-blue-600 flex rounded-2xl text-white font-medium gap-2 sm:gap-4 lg:gap-8 py-1 sm:py-3 px-3 sm:px-4 lg:px-6 text-xs sm:text-sm lg:text-base mx-2 sm:mx-4 lg:mx-8">
           <li>
               <Link href="/" className="hover:underline">
                 Home
