@@ -40,13 +40,12 @@ body {
 }
 
 .arrow-bullet li::before {
-  content: '➤';           /* bold short arrow */
-  color: #2563EB;          /* Tailwind blue-600 */
-  font-weight: bold;       /* make it bold */
-  font-size: 0.60rem;      /* slightly bigger */
-  margin-right: 0.5rem;    /* space between arrow and text */
+  content: '➤';           
+  color: #2563EB;
+  font-weight: bold;
+  font-size: 0.60rem;
+  margin-right: 0.5rem;
 }
-
 
 /* Styles for article content */
 .article-content {
@@ -76,4 +75,20 @@ body {
   display: block;
   width: 100%;
   overflow-x: auto;
+}
+
+.article-content img {
+  width: 50%;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.article-content img,
+.ql-editor img {
+  width: 50% !important;
+  max-height: 450px !important;
+  object-fit: contain !important;
+  display: block;
+  border-radius: 10px;
 }
